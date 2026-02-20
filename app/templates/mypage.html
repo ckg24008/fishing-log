@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイページ - Fishing Log</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* マイページ専用スタイル */
+        .profile-header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #006994, #004d6e);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        .profile-stat {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        /* 写真グリッド（インスタ風） */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 横3列 */
+            gap: 2px;
+            margin-top: 10px;
+        }
+        .grid-item {
+            position: relative;
+            aspect-ratio: 1 / 1; /* 正方形にする */
+            overflow: hidden;
+        }
+        .grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .grid-item:hover img {
+            transform: scale(1.1); /* ホバーで拡大 */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="display: flex; align-items: center;">
+            <a href="/" style="margin-right: 15px; font-size: 1.2rem; color: white; text-decoration: none;">&lt; 戻る</a>
+            <h1>マイページ</h1>
+        </div>
+    </header>
+
+    <div class="profile-header">
+        <div style="font-size: 3rem; margin-bottom: 10px;">👤</div>
+        <h2 style="margin: 0;">{{ user.nickname }}</h2>
+        <p style="opacity: 0.8; font-size: 0.9rem;">{{ user.email }}</p>
+        
+        <div style="margin-top: 20px;">
+            <span style="font-size: 0.9rem;">通算釣果</span><br>
+            <span class="profile-stat">{{ total_catch }}</span> 匹
+        </div>
+    </div>
+
+    <div class="container" style="margin-top: 20px;">
+        
+        <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <h3 style="margin-top: 0; color: #555;">🎣 マイセット (使用タックル)</h3>
+            <p style="font-size: 0.8rem; color: #888;">よく使うタックルセットを3つまで保存できます。</p>
+
+            <form action="/mypage/tackle" method="post">
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: bold; font-size: 0.9rem; color: var(--primary-color);">セットA</label>
+                    <textarea name="tackle_1" rows="3" placeholder="ロッド: XX, リール: XX..." 
+                              style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px;">{{ user.tackle_1 if user.tackle_1 else '' }}</textarea>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: bold; font-size: 0.9rem; color: var(--primary-color);">セットB</label>
+                    <textarea name="tackle_2" rows="3" placeholder="ロッド: XX, リール: XX..." 
+                              style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px;">{{ user.tackle_2 if user.tackle_2 else '' }}</textarea>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: bold; font-size: 0.9rem; color: var(--primary-color);">セットC</label>
+                    <textarea name="tackle_3" rows="3" placeholder="ロッド: XX, リール: XX..." 
+                              style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px;">{{ user.tackle_3 if user.tackle_3 else '' }}</textarea>
+                </div>
+
+                <div style="text-align: right;">
+                    <button type="submit" class="btn btn-primary" style="width: auto; padding: 8px 20px; font-size: 0.9rem;">すべて保存する</button>
+                </div>
+            </form>
+        </div>
+
+        <h3 style="color: #555; margin-bottom: 10px;">📷 マイログ ({{ posts|length }}件)</h3>
+        
+        {% if posts %}
+            <div class="photo-grid">
+                {% for post in posts %}
+                <a href="/post/{{ post.id }}/edit" class="grid-item">
+                    <img src="{{ post.image_url }}">
+                </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="text-align: center; color: #999; padding: 20px;">まだ投稿がありません。</p>
+        {% endif %}
+
+        <div style="margin: 50px 0 30px; text-align: center;">
+            <a href="/logout" class="btn" style="background-color: #c0392b; color: white; display: block;">
+                ログアウト
+            </a>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    </head>
+<body>
+
+    <header style="padding: 10px 15px; background-color: var(--primary-color); color: white;">
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            
+            <h1 style="margin: 0; font-size: 1.2rem; flex-shrink: 0; white-space: nowrap;">
+                <a href="/" style="color: white; text-decoration: none;">Fishing Log 🎣</a>
+            </h1>
+
+            {% if user %}
+                <form action="/" method="get" style="flex-grow: 1; margin: 0 15px; max-width: 600px; display: flex;">
+                    <input type="hidden" name="sort" value="{{ sort }}">
+                    
+                    <input type="text" name="q" placeholder="検索..." 
+                           value="{{ q if q else '' }}" 
+                           style="width: 100%; padding: 8px 12px; border: none; border-radius: 20px; font-size: 0.9rem; outline: none;">
+                </form>
+
+                <div style="flex-shrink: 0;">
+                    <a href="/mypage" style="font-size: 0.8rem; color: white; text-decoration: none; border: 1px solid rgba(255,255,255,0.7); padding: 5px 12px; border-radius: 5px; white-space: nowrap; transition: 0.2s;">
+                        マイページ
+                    </a>
+                </div>
+            {% else %}
+                <div style="flex-shrink: 0;">
+                    <a href="/login" style="color: white; text-decoration: none; font-weight: bold;">ログイン</a>
+                </div>
+            {% endif %}
+            
+        </div>
+    </header>
+
+    {% if user %}
+
+
+
+        <div class="container">
+    
+            <div style="display: flex; justify-content: space-between; align-items: end; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+        
+                <div>
+                    <h2 style="margin: 1; font-size: 1.2rem; color: var(--text-color);">全件表示</h2>
+                    <span style="font-size: 0.8rem; color: #888;">
+                        {% if q %} 🔍 "{{ q }}" の結果: {% endif %}
+                        {{ posts|length }}件
+                    </span>
+                </div>
+
+                <form action="/" method="get">
+                    <input type="hidden" name="q" value="{{ q if q else '' }}">
+            
+                    <select name="sort" onchange="this.form.submit()" 
+                            style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 5px; background: white; font-size: 0.85rem; color: #555;">
+                        <option value="date_desc" {% if sort == 'date_desc' %}selected{% endif %}>📅 日付 (新しい順)</option>
+                        <option value="date_asc" {% if sort == 'date_asc' %}selected{% endif %}>📅 日付 (古い順)</option>
+                        <option value="size_desc" {% if sort == 'size_desc' %}selected{% endif %}>📏 サイズ (大きい順)</option>
+                        <option value="size_asc" {% if sort == 'size_asc' %}selected{% endif %}>📏 サイズ (小さい順)</option>
+                        <option value="quantity_desc" {% if sort == 'quantity_desc' %}selected{% endif %}>🎣 数 (多い順)</option>
+                    </select>
+                </form>
+            </div>
+            {% if posts %}
+                {% for post in posts %}
+                <div class="post-card">
+                    <img src="{{ post.image_url }}" class="post-image" alt="釣果画像">
+            
+                    <div class="post-content">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="fish-name">{{ post.fish_name }}</span>
+                            <span style="font-weight: bold; font-size: 1.1rem;">
+                                {{ post.size_cm }}<small>cm</small>
+                            </span>
+                        </div>
+                
+                        <div class="post-meta">
+                            {% if post.is_place_public %}
+                                <span>📍 {{ post.place }}</span>
+                            {% else %}
+                                <span>🔒 (場所非公開)</span>
+                            {% endif %}
+                    
+                            <span>{{ post.caught_at.strftime('%m/%d') }}</span>
+                        </div>
+                
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                            <span class="badge">
+                                {% if post.weather == '晴れ' %}
+                                    ☀️
+                                {% elif post.weather == '雨' %}
+                                    ☔️
+                                {% else %}
+                                    ☁️
+                                {% endif %}
+                                {{ post.weather }}
+                            </span>
+
+                            <span class="badge">🎣 {{ post.quantity }}匹</span>
+
+                            {% if post.is_public %}
+                                <span class="badge" style="background:#e3f2fd; color:#0d47a1;">🌏 公開中</span>
+                            {% else %}
+                                <span class="badge">🔒 自分のみ</span>
+                            {% endif %}
+                        </div>
+
+                        {% if post.is_tackle_public %}
+                            {% if post.tackle_1 or post.tackle_2 or post.tackle_3 or post.memo %}
+                                <div style="margin-top: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 8px; font-size: 0.9rem; color: #555;">
+                                    
+                                    {% if post.tackle_1 or post.tackle_2 or post.tackle_3 %}
+                                        <div style="font-weight: bold; font-size: 0.8rem; color: #888; margin-bottom: 5px;">🛠️ Tackle Data</div>
+                                        <ul style="margin: 0 0 10px 0; padding-left: 20px; list-style-type: square;">
+                                            {% if post.tackle_1 %} <li>{{ post.tackle_1 }}</li> {% endif %}
+                                            {% if post.tackle_2 %} <li>{{ post.tackle_2 }}</li> {% endif %}
+                                            {% if post.tackle_3 %} <li>{{ post.tackle_3 }}</li> {% endif %}
+                                        </ul>
+                                    {% endif %}
+
+                                    {% if post.memo %}
+                                        {% if post.tackle_1 or post.tackle_2 or post.tackle_3 %}
+                                            <hr style="border: 0; border-top: 1px dashed #ddd; margin: 8px 0;">
+                                        {% endif %}
+                                        <div>📝 {{ post.memo }}</div>
+                                    {% endif %}
+
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                        <div style="margin-top: 15px; text-align: right;">
+                            <a href="/post/{{ post.id }}/edit" style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem; font-weight: bold;">編集</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; padding: 40px; color: #999;">
+                    {% if q %}
+                        <p>条件に一致する釣果は見つかりませんでした。</p>
+                        <br>
+                        <a href="/" style="color: var(--primary-color);">全件表示に戻る</a>
+                    {% else %}
+                        <p>まだ記録がありません。<br>右下のボタンから最初の1匹を登録しよう！</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <a href="/post/new" class="fab">+</a>
+
+    {% else %}
+        <div class="container" style="text-align: center; margin-top: 50px;">
+            <h2>Welcome to Fishing Log</h2>
+            <p>あなたの釣果を美しく記録・管理しましょう。</p>
+            <img src="https://placehold.co/300x200/006994/FFF?text=Fishing+Life" style="border-radius: 10px; margin: 20px 0;">
+            <br>
+            <a href="/login" class="btn btn-primary">ログイン</a>
+            <br><br>
+            <a href="/register" class="btn btn-secondary">新規登録</a>
+        </div>
+    {% endif %}
+
+</body>
+</html>

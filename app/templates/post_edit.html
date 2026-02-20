@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投稿の編集</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <div style="display: flex; align-items: center;">
+            <a href="/" style="margin-right: 15px; font-size: 1.2rem;">✕</a>
+            <h1>投稿の編集</h1>
+        </div>
+    </header>
+
+    <div class="container" style="margin-top: 20px;">
+        <form action="/post/update/{{ post.id }}" method="post" enctype="multipart/form-data">
+            
+            <div class="form-group" style="background: #e3f2fd; padding: 15px; border-radius: 8px; border: 1px solid #bbdefb;">
+                <label style="display: flex; align-items: center; cursor: pointer; margin: 0; color: #0d47a1;">
+                    <input type="checkbox" name="is_public" value="true" 
+                           {% if post.is_public %}checked{% endif %} 
+                           style="width: auto; margin-right: 10px; transform: scale(1.2);">
+                    <b>みんなの掲示板に公開する</b>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label>釣果写真 (変更する場合のみ選択)</label>
+                <img src="{{ post.image_url }}" style="max-height: 150px; border-radius: 8px; margin-bottom: 10px;">
+                <input type="file" name="file" accept="image/*" style="padding: 10px; background: white;">
+            </div>
+
+            <div class="form-group">
+                <label>釣行日時</label>
+                <input type="datetime-local" name="caught_at" 
+                       value="{{ post.caught_at.strftime('%Y-%m-%dT%H:%M') }}" required>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 2;">
+                    <label>魚種</label>
+                    <input type="text" name="fish_name" value="{{ post.fish_name }}" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>数</label>
+                    <input type="number" name="quantity" value="{{ post.quantity }}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>サイズ (cm)</label>
+                <input type="number" name="size_cm" step="0.1" value="{{ post.size_cm }}" required>
+            </div>
+
+            <div class="form-group" style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee;">
+                <label>場所</label>
+                <input type="text" name="place" value="{{ post.place }}" required>
+                
+                <label style="display: flex; align-items: center; cursor: pointer; margin-top: 10px; font-size: 0.9rem; color: #666;">
+                    <input type="checkbox" name="is_place_public" value="true" 
+                           {% if post.is_place_public %}checked{% endif %} 
+                           style="width: auto; margin-right: 8px;">
+                    この場所名を公開する
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label>天気</label>
+                <select name="weather">
+                    <option value="晴れ" {% if post.weather == '晴れ' %}selected{% endif %}>☀️ 晴れ</option>
+                    <option value="曇り" {% if post.weather == '曇り' %}selected{% endif %}>☁️ 曇り</option>
+                    <option value="雨" {% if post.weather == '雨' %}selected{% endif %}>☔️ 雨</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee;">
+                <label>タックル・メモ</label>
+                <textarea name="memo" rows="4">{{ post.memo }}</textarea>
+                
+                <label style="display: flex; align-items: center; cursor: pointer; margin-top: 10px; font-size: 0.9rem; color: #666;">
+                    <input type="checkbox" name="is_tackle_public" value="true" 
+                           {% if post.is_tackle_public %}checked{% endif %} 
+                           style="width: auto; margin-right: 8px;">
+                    このメモを公開する
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 20px; margin-bottom: 50px;">
+                更新する
+            </button>
+        </form> 
+
+        <hr style="margin: 40px 0; border: 0; border-top: 1px solid #eee;">
+
+        <div style="text-align: center; margin-bottom: 50px; background-color: #fff5f5; padding: 20px; border-radius: 10px;">
+            <p style="color: #c0392b; font-size: 0.9rem; font-weight: bold;">
+                ⚠️ 危険なエリア
+            </p>
+            <p style="color: #666; font-size: 0.8rem; margin-bottom: 15px;">
+                この投稿を削除すると、写真もデータも完全に消去されます。<br>
+                元に戻すことはできません。
+            </p>
+            
+            <form action="/post/delete/{{ post.id }}" method="post" 
+                  onsubmit="return confirm('【確認】\n本当にこの投稿を削除してもよろしいですか？\n\n※この操作は取り消せません。');">
+                
+                <button type="submit" style="background-color: #c0392b; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: auto;">
+                    🗑 この投稿を削除する
+                </button>
+            </form>
+        </div>
+        </div>
+</body>
+</html>

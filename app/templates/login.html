@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン - Fishing Log</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* ログイン・登録画面専用のスタイル */
+        .auth-container {
+            max-width: 400px;
+            margin: 60px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .logo-emoji { font-size: 3rem; margin-bottom: 10px; display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Fishing Log 🎣</h1>
+            <a href="/" style="font-size: 0.9rem;">HOME</a>
+        </div>
+    </header>
+
+    <div class="auth-container">
+        <span class="logo-emoji">🌊</span>
+        <h2 style="color: var(--primary-color);">ログイン</h2>
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">
+            おかえりなさい！<br>今日の釣果を記録しましょう。
+        </p>
+
+        {% if error %}
+            <div style="background:#ffebee; color:#c62828; padding:10px; border-radius:5px; margin-bottom:15px; font-size:0.9rem;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form action="/login" method="post">
+            <div class="form-group">
+                <input type="email" name="email" placeholder="メールアドレス" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" placeholder="パスワード" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+                ログインする
+            </button>
+        </form>
+
+        <div style="margin-top: 20px; font-size: 0.9rem;">
+            アカウントをお持ちでないですか？<br>
+            <a href="/register" style="color: var(--primary-color); font-weight: bold;">新規会員登録はこちら</a>
+        </div>
+    </div>
+
+</body>
+</html>

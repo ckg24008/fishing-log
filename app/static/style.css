@@ -1,0 +1,192 @@
+/* --- ベース設定 --- */
+:root {
+    --primary-color: #006994; /* 深い海の色 */
+    --accent-color: #f0ad4e;  /* 太陽や魚の輝き（オレンジ） */
+    --bg-color: #f4f7f6;      /* 清潔な薄いグレー */
+    --text-color: #333;
+    --card-bg: #ffffff;
+}
+
+body {
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    padding-bottom: 80px; /* スマホ用メニューの余白 */
+}
+
+/* --- ヘッダー --- */
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+header a {
+    color: white;
+    text-decoration: none;
+}
+
+/* --- 統計エリア（総釣果など） --- */
+.stats-container {
+    background: linear-gradient(135deg, #006994, #004d6e);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 20px;
+}
+
+.total-catch-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+/* --- カード型レイアウト（投稿リスト） --- */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.post-card {
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+}
+
+.post-card:active {
+    transform: scale(0.98);
+}
+
+.post-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover; /* 画像をトリミングして綺麗に見せる */
+}
+
+.post-content {
+    padding: 15px;
+}
+
+.fish-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    display: block;
+}
+
+.post-meta {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.badge {
+    background-color: #eef2f5;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #555;
+}
+
+/* --- フォーム画面 --- */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="text"], input[type="number"], input[type="email"], 
+input[type="password"], input[type="datetime-local"], select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box; /* パディングを含めた幅にする */
+    font-size: 16px; /* スマホでズームしないサイズ */
+}
+
+/* --- ボタン --- */
+.btn {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #ddd;
+    color: #333;
+}
+
+/* --- フローティングアクションボタン（右下の＋ボタン） --- */
+.fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--accent-color);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 60px;
+    font-size: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    text-decoration: none;
+    z-index: 200;
+}
+
+/* 検索フォームのドロップダウンのスタイル */
+select {
+    /* スマホ(iOS)でのデフォルトスタイルをリセットして見やすく */
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+/* プレースホルダー（入力例）の色を調整 */
+::placeholder {
+    color: #bbb;
+    opacity: 1;
+}
+
+/* 入力欄をクリックした時の枠線色 */
+input:focus, select:focus {
+    outline: 2px solid var(--accent-color);
+}
