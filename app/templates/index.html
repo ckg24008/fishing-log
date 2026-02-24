@@ -68,80 +68,86 @@
                 </form>
             </div>
             {% if posts %}
-                {% for post in posts %}
-                <div class="post-card">
-                    <img src="{{ post.image_url }}" class="post-image" alt="釣果画像">
-            
-                    <div class="post-content">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="fish-name">{{ post.fish_name }}</span>
-                            <span style="font-weight: bold; font-size: 1.1rem;">
-                                {{ post.size_cm }}<small>cm</small>
-                            </span>
-                        </div>
-                
-                        <div class="post-meta">
-                            {% if post.is_place_public %}
-                                <span>📍 {{ post.place }}</span>
-                            {% else %}
-                                <span>🔒 (場所非公開)</span>
-                            {% endif %}
-                    
-                            <span>{{ post.caught_at.strftime('%m/%d') }}</span>
-                        </div>
-                
-                        <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                            <span class="badge">
-                                {% if post.weather == '晴れ' %}
-                                    ☀️
-                                {% elif post.weather == '雨' %}
-                                    ☔️
-                                {% else %}
-                                    ☁️
-                                {% endif %}
-                                {{ post.weather }}
-                            </span>
+    {% for post in posts %}
+    <div class="post-card">               
+        
+        <div style="margin-bottom: 10px; font-size: 0.9rem; color: #555; border-bottom: 1px solid #eee; padding-bottom: 5px;">
+            👤 <strong>{{ post.owner.nickname }}</strong> さんの釣果
+        </div>
 
-                            <span class="badge">🎣 {{ post.quantity }}匹</span>
+        <img src="{{ post.image_url }}" class="post-image" alt="釣果画像">
+        <div class="post-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="fish-name">{{ post.fish_name }}</span>
+                <span style="font-weight: bold; font-size: 1.1rem;">
+                    {{ post.size_cm }}<small>cm</small>
+                </span>
+            </div>
+    
+            <div class="post-meta">
+                {% if post.is_place_public %}
+                    <span>📍 {{ post.place }}</span>
+                {% else %}
+                    <span>🔒 (場所非公開)</span>
+                {% endif %}
+        
+                <span>{{ post.caught_at.strftime('%m/%d') }}</span>
+            </div>
+    
+            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                <span class="badge">
+                    {% if post.weather == '晴れ' %}
+                        ☀️
+                    {% elif post.weather == '雨' %}
+                        ☔️
+                    {% else %}
+                        ☁️
+                    {% endif %}
+                    {{ post.weather }}
+                </span>
 
-                            {% if post.is_public %}
-                                <span class="badge" style="background:#e3f2fd; color:#0d47a1;">🌏 公開中</span>
-                            {% else %}
-                                <span class="badge">🔒 自分のみ</span>
-                            {% endif %}
-                        </div>
+                <span class="badge">🎣 {{ post.quantity }}匹</span>
 
-                        {% if post.is_tackle_public %}
-                            {% if post.tackle_1 or post.tackle_2 or post.tackle_3 or post.memo %}
-                                <div style="margin-top: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 8px; font-size: 0.9rem; color: #555;">
-                                    
-                                    {% if post.tackle_1 or post.tackle_2 or post.tackle_3 %}
-                                        <div style="font-weight: bold; font-size: 0.8rem; color: #888; margin-bottom: 5px;">🛠️ Tackle Data</div>
-                                        <ul style="margin: 0 0 10px 0; padding-left: 20px; list-style-type: square;">
-                                            {% if post.tackle_1 %} <li>{{ post.tackle_1 }}</li> {% endif %}
-                                            {% if post.tackle_2 %} <li>{{ post.tackle_2 }}</li> {% endif %}
-                                            {% if post.tackle_3 %} <li>{{ post.tackle_3 }}</li> {% endif %}
-                                        </ul>
-                                    {% endif %}
+                {% if post.is_public %}
+                    <span class="badge" style="background:#e3f2fd; color:#0d47a1;">🌏 公開中</span>
+                {% else %}
+                    <span class="badge">🔒 自分のみ</span>
+                {% endif %}
+            </div>
 
-                                    {% if post.memo %}
-                                        {% if post.tackle_1 or post.tackle_2 or post.tackle_3 %}
-                                            <hr style="border: 0; border-top: 1px dashed #ddd; margin: 8px 0;">
-                                        {% endif %}
-                                        <div>📝 {{ post.memo }}</div>
-                                    {% endif %}
-
-                                </div>
-                            {% endif %}
+            {% if post.is_tackle_public %}
+                {% if post.tackle_1 or post.tackle_2 or post.tackle_3 or post.memo %}
+                    <div style="margin-top: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 8px; font-size: 0.9rem; color: #555;">
+                        
+                        {% if post.tackle_1 or post.tackle_2 or post.tackle_3 %}
+                            <div style="font-weight: bold; font-size: 0.8rem; color: #888; margin-bottom: 5px;">🛠️ Tackle Data</div>
+                            <ul style="margin: 0 0 10px 0; padding-left: 20px; list-style-type: square;">
+                                {% if post.tackle_1 %} <li>{{ post.tackle_1 }}</li> {% endif %}
+                                {% if post.tackle_2 %} <li>{{ post.tackle_2 }}</li> {% endif %}
+                                {% if post.tackle_3 %} <li>{{ post.tackle_3 }}</li> {% endif %}
+                            </ul>
                         {% endif %}
 
-                        <div style="margin-top: 15px; text-align: right;">
-                            <a href="/post/{{ post.id }}/edit" style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem; font-weight: bold;">編集</a>
-                        </div>
+                        {% if post.memo %}
+                            {% if post.tackle_1 or post.tackle_2 or post.tackle_3 %}
+                                <hr style="border: 0; border-top: 1px dashed #ddd; margin: 8px 0;">
+                            {% endif %}
+                            <div>📝 {{ post.memo }}</div>
+                        {% endif %}
+
                     </div>
-                </div>
-                {% endfor %}
-            {% else %}
+                {% endif %}
+            {% endif %}
+
+            {% if user and user.id == post.owner.id %}
+            <div style="margin-top: 15px; text-align: right;">
+                <a href="/post/{{ post.id }}/edit" style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem; font-weight: bold;">編集</a>
+            </div>
+            {% endif %}
+            </div>
+    </div>
+    {% endfor %}
+{% else %}
                 <div style="text-align: center; padding: 40px; color: #999;">
                     {% if q %}
                         <p>条件に一致する釣果は見つかりませんでした。</p>
