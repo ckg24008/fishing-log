@@ -39,57 +39,57 @@ async def read_root(
     # 1. ログインチェック
     user_id = request.cookies.get("user_id")
     current_user = None
-    posts = []
     total_catch = 0
 
     if user_id:
         current_user = db.query(models.User).filter(models.User.id == int(user_id)).first()
         
-        # --- クエリ構築開始 ---
-        query = db.query(models.Post).filter(models.Post.user_id == int(user_id))
-
-        # ★検索機能 (キーワードがあれば絞り込み)
-        if q:
-            # 魚種 OR 場所 にキーワードが含まれているか
-            query = query.filter(
-                or_(
-                    models.Post.fish_name.contains(q),
-                    models.Post.place.contains(q),
-                    models.Post.memo.contains(q) # メモも検索対象に追加
-                )
-            )
-
-        # ★並び替え機能
-        if sort == "date_desc":
-            query = query.order_by(models.Post.caught_at.desc()) # 新しい順
-        elif sort == "date_asc":
-            query = query.order_by(models.Post.caught_at.asc())  # 古い順
-        elif sort == "size_desc":
-            query = query.order_by(models.Post.size_cm.desc())   # 大きい順
-        elif sort == "size_asc":
-            query = query.order_by(models.Post.size_cm.asc())    # 小さい順
-        elif sort == "quantity_desc":
-            query = query.order_by(models.Post.quantity.desc())  # 数が多い順
-        
-        # データ取得
-        posts = query.all()
-
-        # 総釣果数の計算（検索結果に関わらず全期間の合計を表示するのが一般的ですが、
-        # 今回は「表示されているリストの合計」ではなく「ユーザーの通算」を表示します）
+        # 総釣果数の計算（ログインユーザー自身の通算記録として残しておく）
         total_catch = db.query(func.sum(models.Post.quantity)).\
             filter(models.Post.user_id == int(user_id)).\
             scalar() or 0
 
+    # --------------------------------------------------
+    # ★ここが変更点！「みんなの公開タイムライン」を作る土台
+    # --------------------------------------------------
+    query = db.query(models.Post).filter(models.Post.is_public == True)
+
+    # ★検索機能 (タイムラインの中からキーワードで絞り込み！)
+    if q:
+        # 魚種 OR 場所 にキーワードが含まれているか
+        query = query.filter(
+            or_(
+                models.Post.fish_name.contains(q),
+                models.Post.place.contains(q),
+                models.Post.memo.contains(q) # メモも検索対象に追加
+            )
+        )
+
+    # ★並び替え機能 (タイムラインを好きな順に並び替え！)
+    if sort == "date_desc":
+        query = query.order_by(models.Post.caught_at.desc()) # 新しい順
+    elif sort == "date_asc":
+        query = query.order_by(models.Post.caught_at.asc())  # 古い順
+    elif sort == "size_desc":
+        query = query.order_by(models.Post.size_cm.desc())   # 大きい順
+    elif sort == "size_asc":
+        query = query.order_by(models.Post.size_cm.asc())    # 小さい順
+    elif sort == "quantity_desc":
+        query = query.order_by(models.Post.quantity.desc())  # 数が多い順
+    
+    # データ取得
+    posts = query.all()
+
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "title": "釣果記録＆共有掲示板",
+        "title": "みんなの釣果タイムライン", # タイトルも少し変更！
         "user": current_user,
         "posts": posts,
         "total_catch": total_catch,
         "q": q,      # 画面に今の検索ワードを戻す
         "sort": sort # 画面に今の並び順を戻す
     })
-
+    
 # ① 登録画面を表示する (GET)
 @app.get("/register", response_class=HTMLResponse)
 async def show_register(request: Request):
