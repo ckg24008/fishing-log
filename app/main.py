@@ -423,3 +423,51 @@ async def update_tackle(
     
     # 保存したらマイページを表示しなおす
     return RedirectResponse(url="/mypage", status_code=303)
+
+@app.post("/post/{post_id}/like")
+async def toggle_like(post_id: int, request: Request, db: Session = Depends(database.get_db)):
+    # 誰がいいねを押したか確認
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        return RedirectResponse(url="/", status_code=303) # ログインしてなければ何もしない
+
+    # 自分がすでにこの投稿に「いいね」しているかチェック
+    existing_like = db.query(models.Like).filter(
+        models.Like.post_id == post_id,
+        models.Like.user_id == int(user_id)
+    ).first()
+
+    if existing_like:
+        # すでに「いいね」していたら、取り消す（削除）
+        db.delete(existing_like)
+    else:
+        # まだ「いいね」していなければ、新しく追加する
+        new_like = models.Like(post_id=post_id, user_id=int(user_id))
+        db.add(new_like)
+    
+    db.commit()
+
+    # 「referer」という魔法を使って、今いたページ（トップ画面かマイページ）に一瞬で戻る
+    referer = request.headers.get("referer")
+    return RedirectResponse(url=referer if referer else "/", status_code=303)
+
+@app.post("/post/{post_id}/comment")
+async def add_comment(post_id: int, request: Request, db: Session = Depends(database.get_db)):
+    # 誰がコメントしたか確認
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        return RedirectResponse(url="/", status_code=303) # ログインしてなければ弾く
+
+    # 画面のフォームから送られてきたコメント内容（content）を受け取る
+    form = await request.form()
+    content = form.get("content")
+
+    # コメントが空っぽじゃなければ、データベースに保存！
+    if content:
+        new_comment = models.Comment(content=content, post_id=post_id, user_id=int(user_id))
+        db.add(new_comment)
+        db.commit()
+
+    # 今いたページ（トップ画面かマイページ）に戻る
+    referer = request.headers.get("referer")
+    return RedirectResponse(url=referer if referer else "/", status_code=303)
