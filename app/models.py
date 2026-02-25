@@ -45,3 +45,27 @@ class Post(Base):
     created_at = Column(DateTime, default=datetime.now)
 
     owner = relationship("User", back_populates="posts")
+
+class Like(Base):
+    __tablename__ = "likes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"))
+
+    # 誰がいいねしたか、どの投稿へのいいねかを繋ぐ設定
+    user = relationship("User", backref="likes")
+    post = relationship("Post", backref="likes")
+
+class Comment(Base):
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    content = Column(String, nullable=False) # コメントの内容
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"))
+    created_at = Column(DateTime, default=datetime.utcnow) # コメントした時間
+
+    # 誰がコメントしたか、どの投稿へのコメントかを繋ぐ設定
+    user = relationship("User", backref="comments")
+    post = relationship("Post", backref="comments")

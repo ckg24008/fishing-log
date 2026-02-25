@@ -68,15 +68,17 @@
                 </form>
             </div>
             {% if posts %}
+
     {% for post in posts %}
-    <div class="post-card">               
+    <div class="post-card" style="margin-bottom: 24px; background-color: #ffffff; border: 1px solid #eaeaea; border-radius: 12px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); overflow: hidden;">
         
-        <div style="margin-bottom: 10px; font-size: 0.9rem; color: #555; border-bottom: 1px solid #eee; padding-bottom: 5px;">
+        <div style="margin-bottom: 10px; font-size: 0.9rem; color: #555; border-bottom: 1px solid #eee; padding-bottom: 5px; padding: 10px 15px 0;">
             👤 <strong>{{ post.owner.nickname }}</strong> さんの釣果
         </div>
 
-        <img src="{{ post.image_url }}" class="post-image" alt="釣果画像">
-        <div class="post-content">
+        <img src="{{ post.image_url }}" class="post-image" alt="釣果画像" style="width: 100%; display: block;">
+        
+        <div class="post-content" style="padding: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span class="fish-name">{{ post.fish_name }}</span>
                 <span style="font-weight: bold; font-size: 1.1rem;">
@@ -84,30 +86,21 @@
                 </span>
             </div>
     
-            <div class="post-meta">
+            <div class="post-meta" style="margin-top: 8px;">
                 {% if post.is_place_public %}
                     <span>📍 {{ post.place }}</span>
                 {% else %}
                     <span>🔒 (場所非公開)</span>
                 {% endif %}
-        
                 <span>{{ post.caught_at.strftime('%m/%d') }}</span>
             </div>
     
-            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px;">
                 <span class="badge">
-                    {% if post.weather == '晴れ' %}
-                        ☀️
-                    {% elif post.weather == '雨' %}
-                        ☔️
-                    {% else %}
-                        ☁️
-                    {% endif %}
+                    {% if post.weather == '晴れ' %}☀️{% elif post.weather == '雨' %}☔️{% else %}☁️{% endif %}
                     {{ post.weather }}
                 </span>
-
                 <span class="badge">🎣 {{ post.quantity }}匹</span>
-
                 {% if post.is_public %}
                     <span class="badge" style="background:#e3f2fd; color:#0d47a1;">🌏 公開中</span>
                 {% else %}
@@ -118,7 +111,6 @@
             {% if post.is_tackle_public %}
                 {% if post.tackle_1 or post.tackle_2 or post.tackle_3 or post.memo %}
                     <div style="margin-top: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 8px; font-size: 0.9rem; color: #555;">
-                        
                         {% if post.tackle_1 or post.tackle_2 or post.tackle_3 %}
                             <div style="font-weight: bold; font-size: 0.8rem; color: #888; margin-bottom: 5px;">🛠️ Tackle Data</div>
                             <ul style="margin: 0 0 10px 0; padding-left: 20px; list-style-type: square;">
@@ -127,26 +119,66 @@
                                 {% if post.tackle_3 %} <li>{{ post.tackle_3 }}</li> {% endif %}
                             </ul>
                         {% endif %}
-
                         {% if post.memo %}
                             {% if post.tackle_1 or post.tackle_2 or post.tackle_3 %}
                                 <hr style="border: 0; border-top: 1px dashed #ddd; margin: 8px 0;">
                             {% endif %}
                             <div>📝 {{ post.memo }}</div>
                         {% endif %}
-
                     </div>
                 {% endif %}
             {% endif %}
 
-            {% if user and user.id == post.owner.id %}
-            <div style="margin-top: 15px; text-align: right;">
-                <a href="/post/{{ post.id }}/edit" style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem; font-weight: bold;">編集</a>
+            <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px;">
+                <div style="display: flex; align-items: center;">
+                    {% set ns = namespace(liked=false) %}
+                    {% if user %}
+                        {% for like in post.likes %}
+                            {% if like.user_id == user.id %}
+                                {% set ns.liked = true %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    <form action="/post/{{ post.id }}/like" method="post" style="margin: 0;">
+                        <button type="submit" style="background: none; border: none; cursor: pointer; font-size: 1.4rem; padding: 0; display: flex; align-items: center;">
+                            {% if ns.liked %}❤️{% else %}🤍{% endif %}
+                        </button>
+                    </form>
+                    <span style="font-size: 1rem; color: #666; margin-left: 8px; font-weight: bold;">
+                        {{ post.likes|length }}
+                    </span>
+                </div>
+
+                {% if user and user.id == post.owner.id %}
+                <div>
+                    <a href="/post/{{ post.id }}/edit" style="color: #666; text-decoration: none; font-size: 0.9rem; background-color: #f0f0f0; padding: 5px 12px; border-radius: 20px;">
+                        ✏️ 編集
+                    </a>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
+
+            <div style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed #ccc;">
+                {% if post.comments %}
+                <div style="margin-bottom: 10px; font-size: 0.85rem; color: #444;">
+                    {% for comment in post.comments %}
+                    <div style="margin-bottom: 6px; padding: 6px 10px; background-color: #f8f9fa; border-radius: 8px;">
+                        <strong style="color: #333;">{{ comment.user.nickname }}</strong>: 
+                        {{ comment.content }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if user %}
+                <form action="/post/{{ post.id }}/comment" method="post" style="display: flex; gap: 5px; margin: 0;">
+                    <input type="text" name="content" placeholder="コメントを追加..." required style="flex-grow: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 0.9rem;">
+                    <button type="submit" style="background-color: #0d47a1; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: bold;">送信</button>
+                </form>
+                {% endif %}
             </div>
-    </div>
-    {% endfor %}
+
+        </div> </div> {% endfor %}
 {% else %}
                 <div style="text-align: center; padding: 40px; color: #999;">
                     {% if q %}
