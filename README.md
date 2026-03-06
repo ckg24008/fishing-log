@@ -49,6 +49,7 @@ COMMENTS {
     int user_id FK
     int post_id FK
 }
+    
 ```
 
 ## 5. 画面イメージ
