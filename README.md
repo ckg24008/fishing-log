@@ -18,6 +18,7 @@
 - コメント機能
 
 ## 4. ER図
+
 <pre><code>```mermaid
 erDiagram
 USERS ||--o{ POSTS : "投稿する"
@@ -48,6 +49,7 @@ COMMENTS {
     int user_id FK
     int post_id FK
 }
+```
 
 ## 5. 画面イメージ
 <img width="930" height="818" alt="スクリーンショット 2026-03-06 110942" src="https://github.com/user-attachments/assets/d7d6507d-dc5a-4c50-8772-6d5adfbaad31" />
