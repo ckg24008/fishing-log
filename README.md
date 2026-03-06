@@ -18,7 +18,36 @@
 - コメント機能
 
 ## 4. ER図
-（※ここにデータベースの設計図の画像をドラッグ＆ドロップで貼り付けます）
+<pre><code>```mermaid
+erDiagram
+USERS ||--o{ POSTS : "投稿する"
+USERS ||--o{ LIKES : "いいねする"
+USERS ||--o{ COMMENTS : "コメントする"
+POSTS ||--o{ LIKES : "される"
+POSTS ||--o{ COMMENTS : "される"
+
+USERS {
+    int id PK
+    string email
+    string nickname
+}
+POSTS {
+    int id PK
+    string fish_name
+    int size_cm
+    int owner_id FK
+}
+LIKES {
+    int id PK
+    int user_id FK
+    int post_id FK
+}
+COMMENTS {
+    int id PK
+    string content
+    int user_id FK
+    int post_id FK
+}
 
 ## 5. 画面イメージ
 <img width="930" height="818" alt="スクリーンショット 2026-03-06 110942" src="https://github.com/user-attachments/assets/d7d6507d-dc5a-4c50-8772-6d5adfbaad31" />
